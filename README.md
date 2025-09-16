@@ -54,6 +54,8 @@ Switch effortlessly between the two depending on your mood or mission.
 
 ## 🔮 The Vision  
 
+This AI is by a **12-year-old** student of **The Future Foundation School** named **Sarthak Mitra**. He was guided by two more **12-year-olds** of the same school. Their names are **Aishik Mitra (Sales Manager)** and **Mitadru Bhattacharya (Lead Researcher)** 
+
 Nexus AI is more than just software.  
 It’s a proof of what **young innovators can achieve** when fueled by creativity and a desire to solve real-world problems.  
 
