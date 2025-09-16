@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI | Your Personal Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .chat-container::-webkit-scrollbar { width: 4px; }
+        .chat-container::-webkit-scrollbar-thumb { background-color: #4A5568; border-radius: 20px; }
+        .sidebar::-webkit-scrollbar { display: none; }
+        .sidebar { -ms-overflow-style: none; scrollbar-width: none; }
+        .pulsing-dot { animation: pulse 1.4s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex justify-center items-center h-screen overflow-hidden">
+
+    <!-- App Container -->
+    <div id="app" class="w-full h-full">
+        <!-- Authentication Container -->
+        <div id="auth-container" class="h-full flex flex-col justify-center items-center p-4">
+            <div class="w-full max-w-md bg-gray-800 p-8 rounded-2xl shadow-lg">
+                <h1 class="text-3xl font-bold text-center mb-2">Welcome to Nexus AI</h1>
+                <p class="text-center text-gray-400 mb-8">Sign in to continue</p>
+                
+                <form id="email-password-form" class="space-y-4">
+                    <input type="email" id="email" placeholder="Email" class="w-full px-4 py-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <input type="password" id="password" placeholder="Password (min. 6 characters)" class="w-full px-4 py-3 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <button type="submit" id="email-signin-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-300">Sign In</button>
+                    <button type="button" id="email-signup-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 rounded-lg transition duration-300">Create Account</button>
+                </form>
+
+                <div class="my-6 flex items-center">
+                    <hr class="w-full border-gray-600">
+                    <span class="px-4 text-gray-400">OR</span>
+                    <hr class="w-full border-gray-600">
+                </div>
+                
+                <button id="google-signin-btn" class="w-full bg-white text-gray-800 font-semibold py-3 rounded-lg flex items-center justify-center hover:bg-gray-200 transition duration-300">
+                    <svg class="w-6 h-6 mr-3" viewBox="0 0 48 48"><path fill="#4285F4" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l8.35 6.52C12.91 13.46 18.06 9.5 24 9.5z"></path><path fill="#34A853" d="M46.98 24.55c0-1.57-.15-3.09-.42-4.55H24v8.51h12.8c-.57 5.65-5.71 9.74-12.8 9.74-7.56 0-13.67-6.11-13.67-13.67s6.11-13.67 13.67-13.67c4.17 0 7.48 1.83 9.24 3.52l6.45-6.45C35.13 5.4 29.8 3 24 3 11.98 3 2.13 11.2 2.13 23.5S11.98 44 24 44c11.38 0 20.3-8.08 21.32-18.45l1.66-1z"></path></svg>
+                    Sign in with Google
+                </button>
+                <p id="auth-error" class="text-red-500 text-center mt-4"></p>
+            </div>
+        </div>
+
+        <!-- Main Chat Container -->
+        <div id="chat-container" class="hidden h-full flex relative">
+            <!-- Sidebar -->
+            <div id="sidebar" class="sidebar bg-gray-800 w-full max-w-xs flex-col p-4 overflow-y-auto absolute md:relative z-20 h-full transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold">Nexus AI Chats</h2>
+                    <button id="close-sidebar-btn" class="md:hidden text-gray-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <button id="new-chat-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg mb-4 transition duration-300">+ New Chat</button>
+                <div class="flex-grow">
+                    <ul id="chat-list" class="space-y-2">
+                        <!-- Chat list items will be injected here -->
+                    </ul>
+                </div>
+                <button id="sign-out-btn" class="w-full mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Sign Out</button>
+            </div>
+
+            <!-- Main Chat Area -->
+            <div class="flex-1 flex flex-col bg-gray-900 w-full">
+                <!-- Header with Model Selector -->
+                 <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+                    <button id="open-sidebar-btn" class="md:hidden text-gray-400 hover:text-white mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                    </button>
+                    <div class="flex-grow flex flex-col sm:flex-row justify-center items-center text-center">
+                        <div class="relative">
+                            <select id="model-selector" class="bg-gray-700 text-white rounded-lg px-4 py-2 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="pro">Nexus Pro</option>
+                                <option value="fast">Nexus Fast</option>
+                            </select>
+                             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
+                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                            </div>
+                        </div>
+                         <p id="model-description" class="ml-0 sm:ml-4 mt-2 sm:mt-0 text-sm text-gray-400">Our most powerful and capable model.</p>
+                    </div>
+                </div>
+
+                <div id="message-container" class="flex-1 p-6 overflow-y-auto chat-container">
+                     <div id="welcome-screen" class="flex flex-col items-center justify-center h-full text-center">
+                        <h1 class="text-4xl font-bold">Nexus AI</h1>
+                        <p class="text-gray-400 mt-2">Select a chat or start a new one.</p>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-900 border-t border-gray-700">
+                    <form id="chat-form" class="flex items-center space-x-4">
+                        <input type="text" id="message-input" placeholder="Ask Nexus AI anything..." class="w-full px-4 py-3 bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="off">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold p-3 rounded-lg transition duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // IMPORTANT: Replace this with your project's Firebase credentials
+        const firebaseConfig = {
+            apiKey: "AIzaSyDyQplLKnpFOQlW7_eZ_-FFqozxNd0hwXI",
+            authDomain: "ai-project-a1efd.firebaseapp.com",
+            projectId: "ai-project-a1efd",
+            storageBucket: "ai-project-a1efd.firebasestorage.app",
+            messagingSenderId: "17864553119",
+            appId: "1:17864553119:web:0e93bc601af77d20ee28aa",
+            measurementId: "G-N3QEEY84YF"
+        };
+
+        // Import statements
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { 
+            getAuth, 
+            onAuthStateChanged,
+            GoogleAuthProvider,
+            signInWithPopup,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc,
+            query, 
+            orderBy,
+            onSnapshot,
+            serverTimestamp,
+            doc
+        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // UI Elements
+        const authContainer = document.getElementById('auth-container');
+        const chatContainer = document.getElementById('chat-container');
+        const messageContainer = document.getElementById('message-container');
+        const chatList = document.getElementById('chat-list');
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const messageInput = document.getElementById('message-input');
+        const modelSelector = document.getElementById('model-selector');
+        const modelDescription = document.getElementById('model-description');
+        const sidebar = document.getElementById('sidebar');
+        const openSidebarBtn = document.getElementById('open-sidebar-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        
+        // State variables
+        let currentUserId = null;
+        let activeChatId = null;
+        let messagesUnsubscribe = null;
+        let chatsUnsubscribe = null;
+        let currentMessages = [];
+
+        // --- AUTHENTICATION ---
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                currentUserId = user.uid;
+                authContainer.classList.add('hidden');
+                chatContainer.classList.remove('hidden');
+                loadUserChats(currentUserId);
+            } else {
+                currentUserId = null;
+                activeChatId = null;
+                authContainer.classList.remove('hidden');
+                chatContainer.classList.add('hidden');
+                if (messagesUnsubscribe) messagesUnsubscribe();
+                if (chatsUnsubscribe) chatsUnsubscribe();
+                chatList.innerHTML = '';
+                messageContainer.innerHTML = '';
+                if(welcomeScreen) messageContainer.appendChild(welcomeScreen);
+                currentMessages = [];
+            }
+        });
+        
+        // Event Listeners for Auth
+        document.getElementById('google-signin-btn').addEventListener('click', async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                await signInWithPopup(auth, provider);
+                document.getElementById('auth-error').textContent = '';
+            } catch (error) {
+                document.getElementById('auth-error').textContent = error.message;
+            }
+        });
+
+        document.getElementById('email-password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                if (e.submitter && e.submitter.id === 'email-signin-btn') {
+                    await signInWithEmailAndPassword(auth, email, password);
+                }
+                document.getElementById('auth-error').textContent = '';
+            } catch (error) {
+                document.getElementById('auth-error').textContent = error.message;
+            }
+        });
+
+        document.getElementById('email-signup-btn').addEventListener('click', async () => {
+             const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            try {
+                 await createUserWithEmailAndPassword(auth, email, password);
+                document.getElementById('auth-error').textContent = '';
+            } catch (error) {
+                document.getElementById('auth-error').textContent = error.message;
+            }
+        });
+
+        document.getElementById('sign-out-btn').addEventListener('click', () => {
+            signOut(auth);
+        });
+
+        // --- CHAT & UI FUNCTIONALITY ---
+
+        // Sidebar toggle for mobile
+        openSidebarBtn.addEventListener('click', () => sidebar.classList.remove('-translate-x-full'));
+        closeSidebarBtn.addEventListener('click', () => sidebar.classList.add('-translate-x-full'));
+
+        modelSelector.addEventListener('change', (e) => {
+            const descriptions = {
+                pro: 'Our most powerful and capable model.',
+                fast: 'Our fastest model, great for most everyday tasks.'
+            };
+            modelDescription.textContent = descriptions[e.target.value];
+        });
+
+        function loadUserChats(userId) {
+            if (chatsUnsubscribe) chatsUnsubscribe();
+            const chatsRef = collection(db, 'users', userId, 'chats');
+            const q = query(chatsRef, orderBy('createdAt', 'desc'));
+            
+            chatsUnsubscribe = onSnapshot(q, (snapshot) => {
+                chatList.innerHTML = '';
+                snapshot.forEach(doc => {
+                    const chat = doc.data();
+                    const li = document.createElement('li');
+                    li.className = `p-3 rounded-lg cursor-pointer hover:bg-gray-600 transition-colors ${activeChatId === doc.id ? 'bg-blue-600' : 'bg-gray-700'}`;
+                    li.textContent = chat.title || 'New Chat';
+                    li.dataset.chatId = doc.id;
+                    li.addEventListener('click', () => setActiveChat(doc.id));
+                    chatList.appendChild(li);
+                });
+            });
+        }
+        
+        function setActiveChat(chatId) {
+            if (activeChatId === chatId) return;
+            activeChatId = chatId;
+            document.querySelectorAll('#chat-list li').forEach(li => {
+                li.classList.toggle('bg-blue-600', li.dataset.chatId === chatId);
+                li.classList.toggle('bg-gray-700', li.dataset.chatId !== chatId);
+            });
+            loadChatMessages(currentUserId, chatId);
+            // Close sidebar on mobile after selecting a chat
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('-translate-x-full');
+            }
+        }
+
+        function loadChatMessages(userId, chatId) {
+            if (messagesUnsubscribe) messagesUnsubscribe();
+            
+            const messagesRef = collection(db, 'users', userId, 'chats', chatId, 'messages');
+            const q = query(messagesRef, orderBy('createdAt'));
+
+            messagesUnsubscribe = onSnapshot(q, (snapshot) => {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if(welcomeScreen) welcomeScreen.style.display = 'none';
+                messageContainer.innerHTML = '';
+                currentMessages = [];
+                snapshot.forEach(doc => {
+                    const message = doc.data();
+                    renderMessage(message.role, message.content);
+                    currentMessages.push({ role: message.role, content: message.content });
+                });
+                if (typingIndicator) {
+                    messageContainer.appendChild(typingIndicator);
+                    messageContainer.scrollTop = messageContainer.scrollHeight;
+                }
+            });
+        }
+        
+        document.getElementById('new-chat-btn').addEventListener('click', async () => {
+            if (!currentUserId) return;
+            const newChatRef = await addDoc(collection(db, 'users', currentUserId, 'chats'), {
+                title: 'New Chat',
+                createdAt: serverTimestamp()
+            });
+            setActiveChat(newChatRef.id);
+            messageInput.focus();
+        });
+        
+        document.getElementById('chat-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const form = e.target;
+            const input = form.querySelector('#message-input');
+            const submitButton = form.querySelector('button[type="submit"]');
+            const messageText = input.value.trim();
+            if (!messageText || submitButton.disabled) return;
+
+            input.disabled = true;
+            submitButton.disabled = true;
+            submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            let chatIdToUse = activeChatId;
+            
+            try {
+                if (!chatIdToUse) {
+                    const newChatRef = await addDoc(collection(db, 'users', currentUserId, 'chats'), {
+                        title: messageText.substring(0, 40) + (messageText.length > 40 ? '...' : ''),
+                        createdAt: serverTimestamp()
+                    });
+                    chatIdToUse = newChatRef.id;
+                    setActiveChat(newChatRef.id);
+                }
+                
+                const messageHistoryForApi = [...currentMessages, { role: 'user', content: messageText }];
+
+                const messagesRef = collection(db, 'users', currentUserId, 'chats', chatIdToUse, 'messages');
+                await addDoc(messagesRef, {
+                    role: 'user',
+                    content: messageText,
+                    createdAt: serverTimestamp()
+                });
+                
+                input.value = '';
+                showTypingIndicator();
+
+                const selectedModel = modelSelector.value;
+
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: messageHistoryForApi, model: selectedModel })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: 'API request failed with status ' + response.status }));
+                    throw new Error(errorData.error);
+                }
+
+                const data = await response.json();
+                const assistantMessage = data.choices[0].message.content;
+
+                await addDoc(messagesRef, {
+                    role: 'assistant',
+                    content: assistantMessage,
+                    createdAt: serverTimestamp()
+                });
+
+            } catch (error) {
+                console.error("Error sending message:", error);
+                if (chatIdToUse) {
+                    const messagesRef = collection(db, 'users', currentUserId, 'chats', chatIdToUse, 'messages');
+                     await addDoc(messagesRef, {
+                        role: 'assistant',
+                        content: "Sorry, an error occurred: " + error.message,
+                        createdAt: serverTimestamp()
+                    });
+                }
+            } finally {
+                removeTypingIndicator();
+                input.disabled = false;
+                submitButton.disabled = false;
+                submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                input.focus();
+            }
+        });
+
+        function renderMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            // Responsive max-width for chat bubbles
+            messageDiv.className = `message w-fit p-3 md:p-4 rounded-lg max-w-[80%] md:max-w-xl mb-4 ${role === 'user' ? 'bg-blue-600 ml-auto' : 'bg-gray-700 mr-auto'}`;
+            messageDiv.dataset.role = role;
+
+            const escapedContent = content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            const formattedContent = escapedContent.replace(/```([\s\S]*?)```/g, (match, code) => {
+                return `</pre><pre class="bg-gray-800 text-white p-3 rounded-md my-2 overflow-x-auto"><code>${code.trim()}</code></pre><pre class="hidden">`;
+            });
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.innerHTML = `<pre class="whitespace-pre-wrap font-[inherit]">${formattedContent}</pre>`.replace(/<pre[^>]*><\/pre>/g, '');
+            
+            messageDiv.appendChild(contentDiv);
+            messageContainer.appendChild(messageDiv);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            if (document.getElementById('typing-indicator')) return;
+            const indicatorDiv = document.createElement('div');
+            indicatorDiv.id = 'typing-indicator';
+            indicatorDiv.className = 'message w-fit p-4 rounded-lg max-w-xl mb-4 bg-gray-700 mr-auto';
+            indicatorDiv.innerHTML = `
+                <div class="flex items-center justify-center space-x-1">
+                    <div class="w-2 h-2 bg-gray-400 rounded-full pulsing-dot" style="animation-delay: 0s;"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full pulsing-dot" style="animation-delay: 0.2s;"></div>
+                    <div class="w-2 h-2 bg-gray-400 rounded-full pulsing-dot" style="animation-delay: 0.4s;"></div>
+                </div>
+            `;
+            messageContainer.appendChild(indicatorDiv);
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+    </script>
+</body>
+</html>
+
