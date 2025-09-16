@@ -1,23 +1,28 @@
 import os
 import google.generativeai as genai
+from google.generativeai.types import GenerationConfig
 from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS  # Import the CORS library
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
 app = Flask(__name__, static_folder='.', static_url_path='')
+# Enable CORS for your entire application
+# This will add the necessary headers to allow your frontend to communicate with the backend
+CORS(app)
 
 # Configure the Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-# --- MODEL CONFIGURATION ---
-generation_config = {
-  "temperature": 0.7,
-  "top_p": 1,
-  "top_k": 1,
-  "max_output_tokens": 2048,
-}
+generation_config = GenerationConfig(
+    temperature=0.7,
+    top_p=1,
+    top_k=1,
+    max_output_tokens=2048,
+)
+
 # Safety settings to filter harmful content
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_MEDIUM_AND_ABOVE"},
@@ -109,10 +114,9 @@ def chat():
     
     try:
         # Generate content using the chosen model and the prepared history
-        from google.generativeai.types import GenerationConfig
         response = model.generate_content(
             gemini_history,
-            generation_config=GenerationConfig(**generation_config)
+            generation_config=generation_config
         )
 
         # Format the response to match what the frontend expects
