@@ -6,6 +6,8 @@ Built with cutting-edge **Google Gemini models** and powered by the creativity o
 
 Developed by **ConnectSphere**, a visionary team of students at The Future Foundation School, Nexus AI brings together **intelligence, elegance, and accessibility** in one seamless experience.  
 
+---
+
 ![Built by Students](https://img.shields.io/badge/Built%20by-Students-blueviolet?style=for-the-badge)
 ![Innovators from Bengal](https://img.shields.io/badge/Innovators-From%20Bengal-ff69b4?style=for-the-badge)
 ![Dual AI Modes](https://img.shields.io/badge/Dual%20AI%20Modes-Fast%20%7C%20Pro-orange?style=for-the-badge)
