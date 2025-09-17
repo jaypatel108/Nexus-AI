@@ -121,6 +121,46 @@ Every line of code, every feature, and every idea has been designed with passion
 
 ---
 
+## ❓ FAQ  
+
+**Q1. Is Nexus AI free to use?**  
+Yes ✅ Nexus Fast is completely free and unlimited. Nexus Pro is also free for everyday use, with limited coding requests per day.  
+
+--
+
+**Q2. What’s the difference between Nexus Fast and Nexus Pro?**  
+- **Nexus Fast**: Quick, clever, and designed for casual conversations and everyday queries.  
+- **Nexus Pro**: Powerful, professional, and capable of deep reasoning, research, and coding help.  
+
+--
+
+**Q3. Who built Nexus AI?**  
+Nexus AI was created by **ConnectSphere**, a team of 12-year-old innovators from **The Future Foundation School, Bengal, India**:  
+- 👨‍💻 **Sarthak Mitra** – Founder & Leader  
+- 📈 **Aishik Mitra** – Sales Manager  
+- 🔬 **Mitadru Bhattacharya** – Lead Researcher  
+
+--
+
+**Q4. Is Nexus AI open source?**  
+Yes 🎉 Nexus AI is an **open-source project**. You are free to explore, use, and contribute under the MIT License.  
+
+--
+
+**Q5. How do I get started?**  
+Simply sign in with Google or email to start chatting. No complicated setup required.  
+
+--
+
+**Q6. What’s next for Nexus AI?**  
+We’re working on exciting features like:  
+- 🎤 Voice input & output  
+- 📱 Mobile-friendly experience  
+- 🌐 More language support  
+- 🔔 Smarter notifications and reminders  
+
+---
+
 ## 💡 Tagline  
 
 > **Nexus AI – The Future of AI, Built by the Future of Humanity.**
