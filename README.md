@@ -14,7 +14,7 @@ Developed by **ConnectSphere**, a visionary team of students at The Future Found
 
 ---
 
-## Live Demo
+## 🚀 Live Demo
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://sarthakmitra323.github.io/Nexus-AI/)
 
