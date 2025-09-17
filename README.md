@@ -161,6 +161,20 @@ We’re working on exciting features like:
 
 ---
 
+## 🛣️ Roadmap  
+
+- [x] Build core chat interface with modern UI  
+- [x] Add authentication (Google & Email/Password)  
+- [x] Enable dual AI modes (Fast & Pro)  
+- [x] Store chat history with Firebase Firestore  
+- [ ] Add voice input & output for hands-free use  
+- [ ] Improve mobile responsiveness  
+- [ ] Add multi-language support 🌍  
+- [ ] Create a “dark/light theme” switch  
+- [ ] Launch a mobile app version (Android & iOS)  
+- [ ] Expand Pro mode with advanced coding tools  
+---
+
 ## 💡 Tagline  
 
 > **Nexus AI – The Future of AI, Built by the Future of Humanity.**
