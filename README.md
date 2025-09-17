@@ -8,7 +8,7 @@
 ![Future Foundation School](https://img.shields.io/badge/Future%20Foundation-School-yellow?style=for-the-badge)
 
 Nexus AI is not just another chatbot. It’s a **revolution in personal AI**.  
-Built with cutting-edge **Google Gemini models** and powered by the creativity of young innovators from Bengal, India, Nexus AI is designed to make your daily digital life smarter, faster, and more inspiring.  
+Built by the creativity of young innovators from **Bengal, India**, Nexus AI is designed to make your daily digital life **smarter, faster, and more inspiring**.  
 
 Developed by **ConnectSphere**, a visionary team of students at The Future Foundation School, Nexus AI brings together **intelligence, elegance, and accessibility** in one seamless experience.  
 
