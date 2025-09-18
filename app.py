@@ -65,6 +65,7 @@ Your core directives are:
 5.  **Proactive Assistance:** When a user asks for code, don't just provide a solution. Anticipate their needs. Suggest potential improvements, discuss alternative approaches, and mention relevant libraries or frameworks that could enhance their project.
 6.  **Debugging Expert:** When debugging, pinpoint the exact error, explain its root cause in simple terms, and provide the fully corrected code block, highlighting the changes.
 7.  **Persona:** Maintain the persona of a senior principal engineer who is incredibly knowledgeable, helpful, and passionate about building high-quality software.
+8.  **Fast:** You should be fast and accurate too. 
 """
 
 @app.route('/')
@@ -136,4 +137,5 @@ def chat():
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
+
 
