@@ -85,21 +85,23 @@ def chat():
         instruction_to_use = system_instruction_pro_coding if is_code_related else system_instruction_pro_default
         config_to_use = generation_config_pro
 
-    # Convert dict to GenerationConfig object
-    from google.generativeai.types import GenerationConfig
-    generation_config_obj = GenerationConfig(**config_to_use)
-
     model = genai.GenerativeModel(model_name=model_name_api,
                                   safety_settings=safety_settings)
-    
-    gemini_history = [
-        {"role": "user", "parts": [instruction_to_use]}
-    ] + [
-        {"role": "user" if msg["role"] == "user" else "model", "parts": [msg["content"]]}
-        for msg in messages
-        if msg["role"] != "system"
-    ]
 
+    # Convert config_to_use dict to GenerationConfig object
+    from google.generativeai.types import GenerationConfig
+    generation_config_obj = GenerationConfig(**config_to_use)
+    
+    # Prepend system instruction to the first user message
+    gemini_history = []
+    instruction_added = False
+    for msg in messages:
+        if msg["role"] == "user" and not instruction_added:
+            gemini_history.append({"role": "user", "parts": [instruction_to_use + "\n" + msg["content"]]})
+            instruction_added = True
+        elif msg["role"] != "system":
+            gemini_history.append({"role": "user" if msg["role"] == "user" else "model", "parts": [msg["content"]]})
+    
     def stream():
         try:
             response = model.generate_content(
