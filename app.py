@@ -1,5 +1,7 @@
+from flask import make_response
 import os
 import google.generativeai as genai
+from google.generativeai.types import GenerationConfig
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -9,13 +11,13 @@ import json
 load_dotenv()
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-CORS(app)
+# More specific CORS setup for production environments
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Configure the Gemini API
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
 # --- MODEL CONFIGURATION ---
-# Increased token limit for Pro model to prevent incomplete code
 generation_config_pro = {
   "temperature": 0.2,
   "top_p": 1,
@@ -75,50 +77,62 @@ def chat():
     
     code_keywords = ['code', 'python', 'javascript', 'html', 'css', 'java', 'c++', 'sql', 'script', 'function', 'class', 'algorithm', 'debug', 'error', 'fix', 'implement', 'build', 'create', 'write']
     is_code_related = any(keyword in user_prompt.lower() for keyword in code_keywords)
-
     if model_choice == 'fast':
         model_name_api = "gemini-2.5-flash" 
         instruction_to_use = system_instruction_fast
-        config_to_use = generation_config_fast
+        config_to_use = GenerationConfig(**generation_config_fast)
     else:
         model_name_api = "gemini-2.5-pro"
         instruction_to_use = system_instruction_pro_coding if is_code_related else system_instruction_pro_default
-        config_to_use = generation_config_pro
+        config_to_use = GenerationConfig(**generation_config_pro)
 
+    # Initialize the model without the system_instruction parameter for robustness
     model = genai.GenerativeModel(model_name=model_name_api,
                                   safety_settings=safety_settings)
+    
+    # Manually construct the conversation history, injecting the persona instructions
+    # This is a more explicit and reliable method.
+    conversation_history = []
+    conversation_history.append({'role': 'user', 'parts': [instruction_to_use]})
+    conversation_history.append({'role': 'model', 'parts': ["Understood. I am now Nexus AI, ready to assist."]})
 
-    # Convert config_to_use dict to GenerationConfig object
-    from google.generativeai.types import GenerationConfig
-    generation_config_obj = GenerationConfig(**config_to_use)
-    
-    # Prepend system instruction to the first user message
-    gemini_history = []
-    instruction_added = False
     for msg in messages:
-        if msg["role"] == "user" and not instruction_added:
-            gemini_history.append({"role": "user", "parts": [instruction_to_use + "\n" + msg["content"]]})
-            instruction_added = True
-        elif msg["role"] != "system":
-            gemini_history.append({"role": "user" if msg["role"] == "user" else "model", "parts": [msg["content"]]})
-    
+        if msg.get("role") and msg.get("content") and msg.get("role") != "system":
+            role = "model" if msg["role"] == "assistant" else "user"
+            conversation_history.append({'role': role, 'parts': [msg.get("content")]})
+
     def stream():
         try:
-            response = model.generate_content(
-                gemini_history,
-                generation_config=generation_config_obj,
+            # Use the more robust start_chat and send_message pattern
+            # We provide the history up to the last message, then send the last message
+            chat_session = model.start_chat(history=conversation_history[:-1])
+            
+            response = chat_session.send_message(
+                conversation_history[-1]['parts'],
+                generation_config=config_to_use,
                 stream=True
             )
+
             for chunk in response:
                 if chunk.text:
-                    # Send each chunk of text as it's generated
                     yield f"data: {json.dumps({'text': chunk.text})}\n\n"
         except Exception as e:
             error_message = f"An error occurred: {str(e)}"
-            print(error_message)
+            print(error_message) # Log the actual error to the server console for debugging
             yield f"data: {json.dumps({'error': error_message})}\n\n"
 
     return Response(stream(), mimetype='text/event-stream')
+
+
+# Handle OPTIONS preflight requests for /api/chat
+@app.route('/api/chat', methods=['OPTIONS'])
+def chat_options():
+    resp = make_response('')
+    resp.headers['Access-Control-Allow-Origin'] = '*'
+    resp.headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
+    resp.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    return resp
+
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
