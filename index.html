@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -15,23 +15,20 @@
         .sidebar::-webkit-scrollbar { display: none; }
         .sidebar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* New Styles for Professional Look */
+        /* Professional Styles */
         .glass-pane { background-color: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .main-gradient-text { 
-            background: linear-gradient(to right, #a855f7, #6366f1); 
-            -webkit-background-clip: text; 
-            background-clip: text;
-            -webkit-text-fill-color: transparent; 
-        }
+        .main-gradient-text { background: linear-gradient(to right, #a855f7, #6366f1); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .btn-primary { background: linear-gradient(to right, #8b5cf6, #6366f1); }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
-        .message-content pre { all: revert; /* Revert browser styles for <pre> */ white-space: pre-wrap; font-family: inherit; }
+        .message-content pre { all: revert; white-space: pre-wrap; font-family: inherit; }
         .message-content code { font-family: 'Courier New', Courier, monospace; background-color: rgba(0,0,0,0.3); padding: 0.1em 0.3em; border-radius: 4px; }
         .message-content pre > code { padding: 1rem; display: block; overflow-x: auto; background-color: #1e293b; border-radius: 0.5rem; }
         .pulsing-dot { animation: pulse 1.4s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .blinking-cursor { animation: blink 1s step-end infinite; }
         @keyframes blink { 50% { opacity: 0; } }
+        .mic-listening { color: #a855f7; animation: pulse-mic 1.5s infinite; }
+        @keyframes pulse-mic { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-200 flex justify-center items-center h-screen p-0 md:p-4">
@@ -83,9 +80,7 @@
                     <span>New Chat</span>
                 </button>
                 <div class="flex-grow sidebar">
-                    <ul id="chat-list" class="space-y-2">
-                        <!-- Chat list items will be injected here -->
-                    </ul>
+                    <ul id="chat-list" class="space-y-2"></ul>
                 </div>
                 <button id="sign-out-btn" class="w-full mt-4 bg-slate-700 hover:bg-red-600/50 text-slate-300 hover:text-white font-bold py-2 px-4 rounded-lg transition-all duration-300">Sign Out</button>
             </div>
@@ -124,8 +119,11 @@
                 </div>
 
                 <div class="p-4 bg-slate-900 border-t border-slate-700/50 flex-shrink-0">
-                    <form id="chat-form" class="flex items-center space-x-3">
-                        <input type="text" id="message-input" placeholder="Ask Nexus AI anything..." class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" autocomplete="off">
+                    <form id="chat-form" class="flex items-center space-x-3 relative">
+                        <input type="text" id="message-input" placeholder="Ask Nexus AI... or click the mic to speak" class="w-full pl-4 pr-12 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all" autocomplete="off">
+                        <button type="button" id="mic-btn" class="absolute right-14 top-1/2 -translate-y-1/2 text-slate-400 hover:text-purple-400 transition-colors p-2">
+                            <svg id="mic-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93V17h-2v-2.07A5.002 5.002 0 015 10V8h2v2a3 3 0 006 0V8h2v2a5.002 5.002 0 01-4 4.93z" clip-rule="evenodd" /></svg>
+                        </button>
                         <button type="submit" class="btn-primary text-white font-bold p-3 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
                         </button>
@@ -146,7 +144,7 @@
 
     <!-- Firebase SDKs -->
     <script type="module">
-        // IMPORTANT: Replace this with your project's Firebase credentials
+        // Firebase config (replace with your actual config)
         const firebaseConfig = {
             apiKey: "AIzaSyDyQplLKnpFOQlW7_eZ_-FFqozxNd0hwXI",
             authDomain: "ai-project-a1efd.firebaseapp.com",
@@ -157,29 +155,10 @@
             measurementId: "G-N3QEEY84YF"
         };
 
-        // Import statements
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { 
-            getAuth, 
-            onAuthStateChanged,
-            GoogleAuthProvider,
-            signInWithPopup,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            signOut
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { 
-            getFirestore, 
-            collection, 
-            addDoc,
-            query, 
-            orderBy,
-            onSnapshot,
-            serverTimestamp,
-            doc
-        } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -200,9 +179,9 @@
         let activeChatId = null;
         let messagesUnsubscribe = null;
         let chatsUnsubscribe = null;
-        let currentMessages = []; // In-memory store
+        let currentMessages = [];
         let isInitialChatsLoaded = false;
-        let isStreaming = false; // Flag to control rendering
+        let isStreaming = false;
 
         // --- AUTHENTICATION ---
         onAuthStateChanged(auth, user => {
@@ -229,8 +208,6 @@
             }
         });
         
-        document.getElementById('sign-out-btn').addEventListener('click', () => signOut(auth));
-
         // --- RESPONSIVE SIDEBAR ---
         const sidebarContainer = document.getElementById('sidebar-container');
         const sidebarBackdrop = document.getElementById('sidebar-backdrop');
@@ -254,7 +231,7 @@
                     isInitialChatsLoaded = true;
                 }
                 
-                const currentActiveChatId = activeChatId; // Preserve active chat
+                const currentActiveChatId = activeChatId;
                 chatList.innerHTML = '';
                 snapshot.forEach(doc => {
                     const chat = doc.data();
@@ -285,14 +262,13 @@
 
         function loadChatMessages(userId, chatId) {
             if (messagesUnsubscribe) messagesUnsubscribe();
-            
             const messagesRef = collection(db, 'users', userId, 'chats', chatId, 'messages');
             const q = query(messagesRef, orderBy('createdAt'));
 
             messagesUnsubscribe = onSnapshot(q, (snapshot) => {
-                if (isStreaming) return; // If AI is typing, don't re-render
+                if (isStreaming) return; // Prevent re-rendering during stream to avoid duplication
 
-                if(welcomeScreen) welcomeScreen.style.display = 'none';
+                if(welcomeScreen.parentElement) welcomeScreen.remove();
                 messageContainer.innerHTML = '';
                 currentMessages = [];
                 snapshot.forEach(doc => {
@@ -303,7 +279,7 @@
             });
         }
         
-        // --- MODEL SELECTOR LOGIC ---
+        // --- MODEL SELECTOR ---
         const modelDescriptions = {
             pro: 'Expert model for coding & in-depth tasks.',
             fast: 'Quick and efficient for general conversation.'
@@ -312,8 +288,7 @@
             modelDescription.textContent = modelDescriptions[e.target.value];
         });
 
-
-        // --- SEND MESSAGE LOGIC (STREAMING) ---
+        // --- SEND MESSAGE LOGIC ---
         document.getElementById('chat-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const form = e.target;
@@ -328,7 +303,7 @@
 
             let chatIdToUse = activeChatId;
 
-            // Optimistically render the user's message
+            // Optimistically render the user message for immediate feedback
             renderMessage('user', messageText);
             currentMessages.push({ role: 'user', content: messageText });
 
@@ -342,14 +317,9 @@
             }
             
             const messagesRef = collection(db, 'users', currentUserId, 'chats', chatIdToUse, 'messages');
-            // Save user message to Firestore in the background
-            addDoc(messagesRef, {
-                role: 'user',
-                content: messageText,
-                createdAt: serverTimestamp()
-            });
+            addDoc(messagesRef, { role: 'user', content: messageText, createdAt: serverTimestamp() });
             
-            isStreaming = true; // Set streaming flag
+            isStreaming = true;
             const { contentDiv } = createAssistantMessageBubble();
             let fullResponse = "";
             let isFirstChunk = true;
@@ -364,9 +334,7 @@
                     body: JSON.stringify({ messages: messageHistoryForApi, model: selectedModel })
                 });
 
-                if (!response.body) {
-                    throw new Error("Streaming not supported or response has no body.");
-                }
+                if (!response.body) throw new Error("Streaming not supported.");
 
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
@@ -388,7 +356,7 @@
                                     const parsed = JSON.parse(jsonStr);
                                     if (parsed.text) {
                                         if (isFirstChunk) {
-                                            contentDiv.innerHTML = ''; // Clear the typing animation
+                                            contentDiv.innerHTML = ''; // Clear animation on first text
                                             isFirstChunk = false;
                                         }
                                         fullResponse += parsed.text;
@@ -397,60 +365,61 @@
                                     } else if (parsed.error) {
                                         throw new Error(parsed.error);
                                     }
-                                } catch (e) {
-                                    console.error("Failed to parse JSON from stream:", jsonStr);
-                                }
+                                } catch (e) { console.error("Stream parse error:", jsonStr); }
                             }
                         }
                     }
                 }
                 
-                isStreaming = false; 
                 if (fullResponse) {
-                    await addDoc(messagesRef, {
-                        role: 'assistant',
-                        content: fullResponse,
-                        createdAt: serverTimestamp()
-                    });
+                    await addDoc(messagesRef, { role: 'assistant', content: fullResponse, createdAt: serverTimestamp() });
                 } else {
-                    const tempBubble = document.getElementById('streaming-bubble');
-                    if (tempBubble) tempBubble.remove();
+                    document.getElementById('streaming-bubble')?.remove();
                 }
 
             } catch (error) {
-                console.error("Error during streaming:", error);
+                console.error("Streaming Error:", error);
                 const errorMessage = `Sorry, an error occurred: ${error.message}`;
                 contentDiv.innerHTML = marked.parse(errorMessage);
                 if (fullResponse === "") { 
-                    await addDoc(messagesRef, {
-                        role: 'assistant',
-                        content: errorMessage,
-                        createdAt: serverTimestamp()
-                    });
+                    await addDoc(messagesRef, { role: 'assistant', content: errorMessage, createdAt: serverTimestamp() });
                 }
             } finally {
                 isStreaming = false;
                 input.disabled = false;
                 submitButton.disabled = false;
                 input.focus();
-                const cursor = contentDiv.querySelector('.blinking-cursor');
-                if (cursor) cursor.remove();
+                contentDiv.querySelector('.blinking-cursor')?.remove();
             }
         });
 
-        // --- RENDER & TYPING FUNCTIONS ---
+        // --- RENDER & UTILITY FUNCTIONS ---
         function renderMessage(role, content) {
+            const messageId = `msg-${Date.now()}-${Math.random()}`;
             const messageDiv = document.createElement('div');
             messageDiv.className = `message flex items-start gap-3 w-full max-w-2xl mb-6 ${role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`;
+            messageDiv.id = messageId;
+            
             const avatar = document.createElement('div');
             avatar.className = `w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm ${role === 'user' ? 'bg-purple-600' : 'bg-slate-700'}`;
             avatar.textContent = role === 'user' ? 'U' : 'N';
+            
             const messageBubble = document.createElement('div');
-            messageBubble.className = `p-4 rounded-xl shadow-md w-fit max-w-full ${role === 'user' ? 'bg-purple-600' : 'bg-slate-700'}`;
+            messageBubble.className = `message-bubble p-4 rounded-xl shadow-md w-fit max-w-full relative ${role === 'user' ? 'bg-purple-600' : 'bg-slate-700'}`;
+            
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content text-slate-200';
             contentDiv.innerHTML = marked.parse(content);
+            
             messageBubble.appendChild(contentDiv);
+
+            if (role === 'assistant' && content.trim() !== '') {
+                const speakBtn = document.createElement('button');
+                speakBtn.className = 'speak-btn absolute -bottom-3 right-2 text-slate-500 hover:text-purple-400 transition-colors';
+                speakBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 pointer-events-none" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>`;
+                messageBubble.appendChild(speakBtn);
+            }
+            
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(messageBubble);
             messageContainer.appendChild(messageDiv);
@@ -462,14 +431,11 @@
             const messageDiv = document.createElement('div');
             messageDiv.id = 'streaming-bubble'; 
             messageDiv.className = 'message flex items-start gap-3 w-full max-w-2xl mb-6 mr-auto';
-            
             const avatar = document.createElement('div');
             avatar.className = 'w-8 h-8 rounded-full flex-shrink-0 bg-slate-700 flex items-center justify-center font-bold text-sm';
             avatar.textContent = 'N';
-
             const messageBubble = document.createElement('div');
-            messageBubble.className = 'p-4 rounded-xl shadow-md w-fit max-w-full bg-slate-700';
-            
+            messageBubble.className = 'message-bubble p-4 rounded-xl shadow-md w-fit max-w-full bg-slate-700';
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content text-slate-200';
             contentDiv.innerHTML = `<div class="flex items-center justify-center space-x-1">
@@ -477,21 +443,54 @@
                                         <div class="w-2 h-2 bg-slate-400 rounded-full pulsing-dot" style="animation-delay: 0.2s;"></div>
                                         <div class="w-2 h-2 bg-slate-400 rounded-full pulsing-dot" style="animation-delay: 0.4s;"></div>
                                     </div>`;
-
             messageBubble.appendChild(contentDiv);
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(messageBubble);
             messageContainer.appendChild(messageDiv);
             messageContainer.scrollTop = messageContainer.scrollHeight;
-            
             return { messageBubble: messageDiv, contentDiv: contentDiv };
         }
 
+        // --- SPEECH-TO-TEXT ---
+        const micBtn = document.getElementById('mic-btn');
+        const micIcon = document.getElementById('mic-icon');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false; recognition.lang = 'en-US'; recognition.interimResults = false;
+            recognition.onstart = () => { micIcon.classList.add('mic-listening'); messageInput.placeholder = 'Listening...'; };
+            recognition.onend = () => { micIcon.classList.remove('mic-listening'); messageInput.placeholder = 'Ask Nexus AI...'; };
+            recognition.onerror = (e) => console.error('STT Error:', e.error);
+            recognition.onresult = (e) => { messageInput.value = e.results[0][0].transcript; document.getElementById('chat-form').requestSubmit(); };
+            micBtn.addEventListener('click', () => { try { recognition.start(); } catch(e) { console.error("STT Start Error:", e); } });
+        } else {
+            micBtn.style.display = 'none';
+        }
 
-        // --- UNCHANGED JS SNIPPETS ---
-        document.getElementById('google-signin-btn').addEventListener('click', async () => {const provider = new GoogleAuthProvider();try {await signInWithPopup(auth, provider);document.getElementById('auth-error').textContent = '';} catch (error) {document.getElementById('auth-error').textContent = error.message;}});
-        document.getElementById('email-password-form').addEventListener('submit', async (e) => {e.preventDefault();const email = document.getElementById('email').value;const password = document.getElementById('password').value;try {if (e.submitter && e.submitter.id === 'email-signin-btn') {await signInWithEmailAndPassword(auth, email, password);}document.getElementById('auth-error').textContent = '';} catch (error) {document.getElementById('auth-error').textContent = error.message;}});
-        document.getElementById('email-signup-btn').addEventListener('click', async () => {const email = document.getElementById('email').value;const password = document.getElementById('password').value;try {await createUserWithEmailAndPassword(auth, email, password);document.getElementById('auth-error').textContent = '';} catch (error) {document.getElementById('auth-error').textContent = error.message;}});
+        // --- TEXT-TO-SPEECH (Browser API) ---
+        const synth = window.speechSynthesis;
+        let voices = [];
+        function populateVoiceList() { if(typeof synth === 'undefined') return; voices = synth.getVoices(); }
+        populateVoiceList();
+        if (typeof synth !== 'undefined' && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = populateVoiceList;
+        messageContainer.addEventListener('click', (e) => {
+            const speakBtn = e.target.closest('.speak-btn');
+            if (!speakBtn) return;
+            const messageContent = speakBtn.closest('.message-bubble').querySelector('.message-content').innerText;
+            if (!messageContent) return;
+            if (synth.speaking) synth.cancel();
+            const utterance = new SpeechSynthesisUtterance(messageContent);
+            utterance.voice = voices.find(v => v.name.includes('Google US English')) || voices.find(v => v.lang === 'en-US');
+            utterance.onend = () => speakBtn.classList.remove('text-purple-400');
+            speakBtn.classList.add('text-purple-400');
+            synth.speak(utterance);
+        });
+        
+        // --- UNCHANGED AUTH SNIPPETS ---
+        document.getElementById('google-signin-btn').addEventListener('click', async () => {const provider = new GoogleAuthProvider();try {await signInWithPopup(auth, provider);} catch (error) {document.getElementById('auth-error').textContent = error.message;}});
+        document.getElementById('email-password-form').addEventListener('submit', async (e) => {e.preventDefault();const email = document.getElementById('email').value;const password = document.getElementById('password').value;try {if (e.submitter?.id === 'email-signin-btn') await signInWithEmailAndPassword(auth, email, password);} catch (error) {document.getElementById('auth-error').textContent = error.message;}});
+        document.getElementById('email-signup-btn').addEventListener('click', async () => {const email = document.getElementById('email').value;const password = document.getElementById('password').value;try {await createUserWithEmailAndPassword(auth, email, password);} catch (error) {document.getElementById('auth-error').textContent = error.message;}});
         document.getElementById('new-chat-btn').addEventListener('click', async () => {if (!currentUserId) return; activeChatId=null; currentMessages=[]; messageContainer.innerHTML = ''; if (welcomeScreen) { messageContainer.appendChild(welcomeScreen); welcomeScreen.style.display = 'flex'; } messageInput.focus(); });
     </script>
 </body>
