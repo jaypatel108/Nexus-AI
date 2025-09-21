@@ -167,7 +167,7 @@ We’re working on exciting features like:
 - [x] Add authentication (Google & Email/Password)  
 - [x] Enable dual AI modes (Fast & Pro)  
 - [x] Store chat history with Firebase Firestore  
-- [ ] Add voice input & output for hands-free use  
+- [x] Add voice input & output for hands-free use  
 - [ ] Improve mobile responsiveness  
 - [ ] Add multi-language support 🌍  
 - [ ] Create a “dark/light theme” switch  
