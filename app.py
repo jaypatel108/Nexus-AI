@@ -60,7 +60,7 @@ Your non-negotiable directives are:
 
 @app.route('/')
 def index():
-    return app.send_static_file('index.html')
+    return app.send_static_file('app.html')
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -136,3 +136,4 @@ def chat_options():
 
 if __name__ == '__main__':
     app.run(port=3000, debug=True)
+
