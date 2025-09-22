@@ -270,6 +270,7 @@
         onAuthStateChanged(auth, user => {
             if (user) {
                 console.log("User is logged in, redirecting to app.");
+                // THIS IS THE FIX: Redirect to app.html, not index.html
                 window.location.href = 'app.html';
             }
         });
@@ -307,5 +308,4 @@
     </script>
 </body>
 </html>
-
 
