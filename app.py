@@ -64,6 +64,10 @@ def index():
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
+    # Handle non-JSON requests from uptime bots to keep the server alive
+    if not request.is_json:
+        return jsonify({"status": "alive"}), 200
+        
     data = request.json
     if data is None:
         return jsonify({"error": "No JSON data provided"}), 400
