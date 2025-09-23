@@ -328,7 +328,7 @@
                 const selectedModel = modelSelector.value;
                 const messageHistoryForApi = [...currentMessages];
 
-                const response = await fetch('/api/chat', {
+                const response = await fetch('https://nexus-ai-1s8u.onrender.com/api/chat/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ messages: messageHistoryForApi, model: selectedModel })
@@ -495,6 +495,7 @@
     </script>
 </body>
 </html>
+
 
 
 
