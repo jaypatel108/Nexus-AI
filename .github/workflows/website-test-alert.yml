@@ -2,17 +2,19 @@ name: Website Test & Alert
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # every 10 minutes
-  workflow_dispatch:
+    - cron: "*/10 * * * *"   # runs every 10 minutes
+  workflow_dispatch:         # manual run option
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
+      # Mask Gmail so it doesn't appear in logs
       - name: Mask Gmail
         run: echo "::add-mask::${{ secrets.EMAIL_USER }}"
 
+      # Test multiple endpoints
       - name: Test multiple endpoints
         run: |
           ENDPOINTS=(
@@ -21,21 +23,38 @@ jobs:
             "https://nexus-ai-1s8u.onrender.com/health"
           )
 
+          EXPECTED_TEXT=(
+            "Welcome to ConnectSphere"
+            "API is running"
+            "OK"
+          )
+
           ERRORS=0
+          i=0
+
           for URL in "${ENDPOINTS[@]}"; do
-            STATUS=$(curl -o /dev/null -s -w "%{http_code}" "$URL")
+            STATUS=$(curl -o /dev/null -s -w "%{http_code}" -L "$URL")
             if [ "$STATUS" -ne 200 ]; then
               echo "❌ $URL is DOWN (status $STATUS)" >> result.log
               ERRORS=1
             else
-              echo "✅ $URL is UP (status $STATUS)"
+              # Optional: check for specific content
+              CONTENT=$(curl -s -L "$URL")
+              if ! echo "$CONTENT" | grep -q "${EXPECTED_TEXT[$i]}"; then
+                echo "❌ $URL missing expected content: ${EXPECTED_TEXT[$i]}" >> result.log
+                ERRORS=1
+              else
+                echo "✅ $URL is UP and content OK"
+              fi
             fi
+            i=$((i+1))
           done
 
           if [ $ERRORS -ne 0 ]; then
             exit 1
           fi
 
+      # Send email if any test failed
       - name: Send email if failed
         if: failure()
         uses: dawidd6/action-send-mail@v3
@@ -48,7 +67,7 @@ jobs:
           to: hello.connectsphere.official@gmail.com
           from: "Uptime Bot <${{ secrets.EMAIL_USER }}>"
           body: |
-            One or more endpoints are DOWN:
+            One or more endpoints are DOWN or missing expected content:
 
             $(cat result.log)
 
