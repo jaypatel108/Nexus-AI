@@ -3,6 +3,6 @@ python-dotenv
 google-generativeai
 gunicorn
 Flask-Cors
-requests
-beautifulsoup4
-googlesearch-python
+Flask-Limiter
+Flask-SeaSurf
+
